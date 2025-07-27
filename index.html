@@ -4,7 +4,370 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Backhodi Time Table</title>
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        @keyframes animated-gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        @keyframes reminder-glow {
+            0% { box-shadow: 0 0 5px #ff4d4d, 0 0 10px #ff4d4d, inset 0 0 5px rgba(255, 77, 77, 0.5); }
+            50% { box-shadow: 0 0 20px #ff4d4d, 0 0 30px #ff4d4d, inset 0 0 10px rgba(255, 77, 77, 0.5); }
+            100% { box-shadow: 0 0 5px #ff4d4d, 0 0 10px #ff4d4d, inset 0 0 5px rgba(255, 77, 77, 0.5); }
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        :root {
+            /* Neon Matrix Palette */
+            --primary-bg: #0d0221;
+            --secondary-bg-rgba: rgba(10, 25, 47, 0.85);
+            --cell-bg-rgba: rgba(23, 42, 69, 0.75);
+            --text-color: #f0f0f0;
+            --neon-cyan: #00f6ff;
+            --neon-pink: #ff00ff;
+            --neon-green: #39ff14;
+            --neon-red: #ff4d4d;
+            --border-glow: rgba(0, 246, 255, 0.3);
+            --modal-bg: #0d0221;
+            --cs-color: var(--neon-cyan);
+            --cc-color: var(--neon-pink);
+            --lunch-bg: rgba(44, 62, 80, 0.8);
+
+            /* Day-specific Gradients */
+            --monday-grad: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
+            --tuesday-grad: linear-gradient(135deg, #f7971e 0%, #ffd200 100%);
+            --wednesday-grad: linear-gradient(135deg, #8e2de2 0%, #4a00e0 100%);
+            --thursday-grad: linear-gradient(135deg, #d66d75 0%, #e29587 100%);
+            --friday-grad: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            --saturday-grad: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+            background: linear-gradient(270deg, #0d0221, #0a192f, #240b36);
+            background-size: 600% 600%;
+            animation: animated-gradient 16s ease infinite;
+            color: var(--text-color);
+            margin: 0;
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: auto;
+            backdrop-filter: blur(3px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: #fff;
+            font-size: 3em;
+            margin: 0;
+            font-weight: 700;
+            text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 20px var(--neon-pink), 0 0 30px var(--neon-pink), 0 0 40px var(--neon-pink);
+        }
+
+        #clock {
+            font-size: 1.2em;
+            background-color: var(--secondary-bg-rgba);
+            padding: 10px 15px;
+            border-radius: 8px;
+            display: inline-block;
+            margin: 15px 0;
+            border: 1px solid var(--neon-cyan);
+            box-shadow: 0 0 10px var(--border-glow);
+        }
+
+        .view-controls {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .view-controls button {
+            background: transparent;
+            border: 2px solid var(--neon-pink);
+            color: var(--neon-pink);
+            padding: 8px 15px;
+            margin: 0;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 5px var(--neon-pink);
+        }
+
+        .view-controls button:hover {
+            background-color: var(--neon-pink);
+            color: var(--primary-bg);
+            box-shadow: 0 0 20px var(--neon-pink);
+        }
+
+        .view-controls button.active {
+            background-color: var(--neon-pink);
+            color: var(--primary-bg);
+            box-shadow: 0 0 25px var(--neon-pink);
+        }
+
+        .timetable-container {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .timetable-grid {
+            display: grid;
+            grid-template-columns: 80px repeat(6, 1fr); 
+            grid-template-rows: auto repeat(8, 1fr); 
+            gap: 8px;
+        }
+
+        .grid-header, .time-slot, .grid-cell {
+            background-color: var(--secondary-bg-rgba);
+            padding: 10px;
+            text-align: center;
+            border-radius: 8px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--neon-cyan);
+            box-shadow: inset 0 0 8px var(--border-glow);
+            transition: all 0.3s ease;
+        }
+        
+        .grid-cell:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px var(--border-glow), inset 0 0 8px var(--border-glow);
+        }
+        
+        .grid-header {
+            color: white;
+            font-size: 1.2em;
+            border: none;
+            box-shadow: none;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.4);
+        }
+
+        .timetable-grid .grid-header:nth-of-type(2) { background-image: var(--monday-grad); }
+        .timetable-grid .grid-header:nth-of-type(3) { background-image: var(--tuesday-grad); }
+        .timetable-grid .grid-header:nth-of-type(4) { background-image: var(--wednesday-grad); }
+        .timetable-grid .grid-header:nth-of-type(5) { background-image: var(--thursday-grad); }
+        .timetable-grid .grid-header:nth-of-type(6) { background-image: var(--friday-grad); }
+        .timetable-grid .grid-header:nth-of-type(7) { background-image: var(--saturday-grad); }
+        
+        .time-slot {
+            font-size: 0.8em;
+            flex-direction: column;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 5px var(--border-glow);
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            padding: 5px;
+        }
+        
+        .lunch-slot {
+            writing-mode: horizontal-tb;
+            grid-column: 1 / -1;
+            background-color: var(--lunch-bg);
+            font-size: 1.2em;
+        }
+
+        .grid-cell {
+            background-color: var(--cell-bg-rgba);
+            min-height: 80px;
+            padding: 0;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .class-item {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            position: relative;
+            font-size: 0.8em;
+            padding: 5px;
+            width: 100%;
+            height: 100%;
+            transition: all 0.5s ease;
+        }
+        
+        .class-item.reminder-alert {
+            border: 1px solid var(--neon-red);
+            animation: reminder-glow 2s infinite ease-in-out;
+        }
+
+        .split-class {
+            border-top: 1px dashed var(--neon-pink);
+        }
+        .split-class:first-child {
+            border-top: none;
+        }
+        
+        .row-span-2 { grid-row: span 2; }
+        
+        .subject {
+            font-weight: bold;
+            color: #fff;
+            font-size: 1em;
+            text-align: center;
+            text-shadow: 0 0 3px #fff;
+        }
+        
+        .spec-label {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            font-weight: bold;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-size: 0.7em;
+            color: #000;
+            box-shadow: 0 0 8px;
+        }
+        .spec-label.cs {
+            background-color: var(--cs-color);
+            box-shadow: 0 0 8px var(--cs-color);
+        }
+        .spec-label.cc {
+            background-color: var(--cc-color);
+            box-shadow: 0 0 8px var(--cc-color);
+        }
+
+        .container.view-cs .class-item[data-spec="CC"],
+        .container.view-cs .split-class[data-spec="CC"] { display: none; }
+        .container.view-cc .class-item[data-spec="CS"],
+        .container.view-cc .split-class[data-spec="CS"] { display: none; }
+
+        .container.view-cs .grid-cell .split-class[data-spec="CS"]:first-child,
+        .container.view-cc .grid-cell .split-class[data-spec="CC"]:first-child {
+             border-top: none;
+        }
+
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.7); backdrop-filter: blur(5px); }
+        .modal-content { background-color: var(--modal-bg); margin: 10% auto; padding: 25px; border: 1px solid var(--neon-pink); width: 90%; max-width: 600px; border-radius: 10px; animation: fadeIn 0.3s; box-shadow: 0 0 25px var(--neon-pink); }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--neon-pink); padding-bottom: 15px; margin-bottom: 20px; }
+        .modal-header h2 { margin: 0; color: var(--neon-pink); font-size: 1.5em; text-shadow: 0 0 10px var(--neon-pink); }
+        .close-button { color: var(--text-color); font-size: 28px; font-weight: bold; cursor: pointer; }
+        
+        .modal-body h3 {
+            color: var(--neon-cyan);
+            border-bottom: 1px solid var(--neon-cyan);
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+        }
+        
+        #task-input-area, #reminder-area {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        #task-input {
+            flex-grow: 1;
+            background-color: transparent;
+            border: 1px solid var(--neon-cyan);
+            color: var(--text-color);
+            padding: 10px;
+            border-radius: 5px;
+        }
+        #add-task-btn { background-color: var(--neon-green); color: #000; border: none; padding: 10px 15px; border-radius: 5px; font-weight: bold; cursor: pointer; }
+        #reminder-date {
+            background-color: transparent;
+            border: 1px solid var(--neon-cyan);
+            color: var(--text-color);
+            padding: 8px;
+            border-radius: 5px;
+            color-scheme: dark;
+        }
+        #reminder-toggle-label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+        }
+        
+        #task-list { list-style: none; padding: 0; max-height: 150px; overflow-y: auto; }
+        #task-list li { background: var(--secondary-bg-rgba); padding: 10px; margin-bottom: 5px; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; border-left: 3px solid var(--neon-green); }
+        #task-list li.completed span { text-decoration: line-through; opacity: 0.6; }
+        #task-list li .task-date { font-size: 0.8em; opacity: 0.7; margin-left: 10px; }
+        .delete-task { background: none; border: none; color: var(--neon-red); font-size: 1.2em; cursor: pointer; }
+        
+        .modal-footer { text-align: right; margin-top: 20px; }
+        #save-btn { background-color: var(--neon-pink); color: #000; border: none; padding: 12px 25px; border-radius: 5px; font-weight: bold; cursor: pointer; }
+
+        .gemini-btn {
+            background-color: transparent;
+            border: 1px solid var(--neon-green);
+            color: var(--neon-green);
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            display: block;
+            width: 100%;
+            text-align: center;
+        }
+        .gemini-btn:hover {
+            background-color: var(--neon-green);
+            color: var(--primary-bg);
+            box-shadow: 0 0 15px var(--neon-green);
+        }
+        #notes-controls {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 5px;
+        }
+        #notes-controls .gemini-btn {
+            display: inline-block;
+            width: auto;
+            margin-top: 0;
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--neon-pink);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        /* --- Responsive Styles for Mobile --- */
+        @media (max-width: 768px) {
+            body { padding: 5px; }
+            h1 { font-size: 1.8em; text-shadow: 0 0 5px #fff, 0 0 10px var(--neon-pink); }
+            #clock { font-size: 1em; }
+            .view-controls button { font-size: 0.8em; padding: 8px 12px; }
+            .timetable-container { overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid var(--border-glow); border-radius: 8px; padding-bottom: 10px; }
+            .timetable-grid { min-width: 800px; }
+            .timetable-grid > .grid-header:first-child,
+            .timetable-grid > .time-slot:not(.lunch-slot) { position: sticky; left: 0; z-index: 10; background: var(--primary-bg); border-right: 1px solid var(--neon-cyan); }
+            .grid-header { font-size: 1em; }
+            .time-slot { writing-mode: horizontal-tb; padding: 5px; min-height: 70px; font-size: 0.8em; }
+            .lunch-slot { font-size: 1em; }
+            .grid-cell { min-height: 70px; }
+            .class-item { font-size: 0.8em; }
+            .subject { font-size: 0.9em; }
+            .spec-label { font-size: 0.7em; }
+        }
+    </style>
 </head>
 <body>
 
@@ -21,46 +384,102 @@
 
         <div class="timetable-container">
             <div class="timetable-grid">
-                <!-- Grid content remains the same -->
-                 <div class="grid-header"></div><div class="grid-header">Monday</div><div class="grid-header">Tuesday</div><div class="grid-header">Wednesday</div><div class="grid-header">Thursday</div><div class="grid-header">Friday</div><div class="grid-header">Saturday</div>
+                <!-- Header Row -->
+                <div class="grid-header"></div><div class="grid-header">Monday</div><div class="grid-header">Tuesday</div><div class="grid-header">Wednesday</div><div class="grid-header">Thursday</div><div class="grid-header">Friday</div><div class="grid-header">Saturday</div>
+                
+                <!-- Time Slot 1: 9:00 - 10:00 -->
                 <div class="time-slot">9:00<span>|</span>10:00</div>
-                <div class="grid-cell row-span-2"><div class="class-item split-class" id="mon-9-cs" data-spec="CS"><span class="spec-label cs">CS</span><span class="subject">Linux and Shell Programming Lab</span></div><div class="class-item split-class" id="mon-9-cc" data-spec="CC"><span class="spec-label cc">CC</span><span class="subject">Essentials of Cybersecurity Lab</span></div></div>
-                <div class="grid-cell"><div class="class-item" id="tue-9-both" data-spec="BOTH"><span class="subject">Data Mining and Data Modeling</span></div></div>
-                <div class="grid-cell row-span-2"><div class="class-item split-class" id="wed-9-cs" data-spec="CS"><span class="spec-label cs">CS</span><span class="subject">Computer Network Lab</span></div><div class="class-item split-class" id="wed-9-cc" data-spec="CC"><span class="spec-label cc">CC</span><span class="subject">Essentials of Cybersecurity Lab</span></div></div>
-                <div class="grid-cell row-span-2"><div class="class-item split-class" id="thu-9-cs" data-spec="CS"><span class="spec-label cs">CS</span><span class="subject">Software Engineering Lab</span></div><div class="class-item split-class" id="thu-9-cc" data-spec="CC"><span class="spec-label cc">CC</span><span class="subject">SEC3 (MATLAB)</span></div></div>
-                <div class="grid-cell row-span-2"><div class="class-item" id="fri-9-both" data-spec="BOTH"><span class="subject">Automata Theory and Computability</span></div></div>
-                <div class="grid-cell"><div class="class-item" id="sat-9-both" data-spec="BOTH"><span class="subject">Blockchain Policy</span></div></div>
+                <div class="grid-cell row-span-2">
+                    <div class="class-item split-class" id="mon-9-cs" data-spec="CS"><span class="spec-label cs">CS</span><span class="subject">Linux and Shell Programming Lab</span></div>
+                    <div class="class-item split-class" id="mon-9-cc" data-spec="CC"><span class="spec-label cc">CC</span><span class="subject">Essentials of Cyber Security Lab</span></div>
+                </div>
+                <div class="grid-cell row-span-2">
+                    <div class="class-item split-class" id="tue-9-cs" data-spec="CS"><span class="spec-label cs">CS</span><span class="subject">Essentials of Cyber Security Lab</span></div>
+                    <div class="class-item split-class" id="tue-9-cc" data-spec="CC"><span class="spec-label cc">CC</span><span class="subject">Software Engineering Lab</span></div>
+                </div>
+                <div class="grid-cell row-span-2">
+                    <div class="class-item split-class" id="wed-9-cs" data-spec="CS"><span class="spec-label cs">CS</span><span class="subject">Computer Network Lab</span></div>
+                    <div class="class-item split-class" id="wed-9-cc" data-spec="CC"><span class="spec-label cc">CC</span><span class="subject">Essentials of Cyber Security Lab</span></div>
+                </div>
+                <div class="grid-cell row-span-2">
+                    <div class="class-item split-class" id="thu-9-cs" data-spec="CS"><span class="spec-label cs">CS</span><span class="subject">Software Engineering Lab</span></div>
+                    <div class="class-item split-class" id="thu-9-cc" data-spec="CC"><span class="spec-label cc">CC</span><span class="subject">SEC-III (MATLAB)</span></div>
+                </div>
+                <div class="grid-cell">
+                     <div class="class-item" id="fri-9-both" data-spec="BOTH"><span class="subject">Data Mining and Predictive Modelling</span></div>
+                </div>
+                <div class="grid-cell">
+                     <div class="class-item" id="sat-9-both" data-spec="BOTH"><span class="subject">Blockchain Policy</span></div>
+                </div>
+
+                <!-- Time Slot 2: 10:00 - 11:00 -->
                 <div class="time-slot">10:00<span>|</span>11:00</div>
-                <div class="grid-cell"><div class="class-item" id="tue-10-both" data-spec="BOTH"><span class="subject">Essentials of Cybersecurity</span></div></div>
-                <div class="grid-cell"><div class="class-item" id="sat-10-both" data-spec="BOTH"><span class="subject">Essentials of Cybersecurity</span></div></div>
+                <div class="grid-cell">
+                     <div class="class-item" id="fri-10-both" data-spec="BOTH"><span class="subject">Automata Theory and Computability</span></div>
+                </div>
+                <div class="grid-cell">
+                    <div class="class-item" id="sat-10-both" data-spec="BOTH"><span class="subject">Essentials of Cyber Security</span></div>
+                </div>
+
+                <!-- Time Slot 3: 11:00 - 12:00 -->
                 <div class="time-slot">11:00<span>|</span>12:00</div>
-                <div class="grid-cell row-span-2"><div class="class-item split-class" id="mon-11-cs" data-spec="CS"><span class="spec-label cs">CS</span><span class="subject">Computer Network Lab</span></div><div class="class-item split-class" id="mon-11-cc" data-spec="CC"><span class="spec-label cc">CC</span><span class="subject">Software Engineering Lab</span></div></div>
-                <div class="grid-cell row-span-2"><div class="class-item split-class" id="tue-11-cs" data-spec="CS"><span class="spec-label cs">CS</span><span class="subject">Essentials of Cybersecurity Lab</span></div><div class="class-item split-class" id="tue-11-cc" data-spec="CC"><span class="spec-label cc">CC</span><span class="subject">Software Engineering Lab</span></div></div>
-                <div class="grid-cell row-span-2"><div class="class-item split-class" id="wed-11-cs" data-spec="CS"><span class="spec-label cs">CS</span><span class="subject">Software Engineering Lab</span></div><div class="class-item split-class" id="wed-11-cc" data-spec="CC"><span class="spec-label cc">CC</span><span class="subject">Computer Network Lab</span></div></div>
-                <div class="grid-cell row-span-2"><div class="class-item split-class" id="thu-11-cs" data-spec="CS"><span class="spec-label cs">CS</span><span class="subject">Linux and Shell Programming</span></div><div class="class-item split-class" id="thu-11-cc" data-spec="CC"><span class="spec-label cc">CC</span><span class="subject">Computer Network Lab</span></div></div>
+                <div class="grid-cell"><div class="class-item" id="mon-11-both" data-spec="BOTH"><span class="subject">Computer Network Lab</span></div></div>
+                <div class="grid-cell"><div class="class-item" id="tue-11-both" data-spec="BOTH"><span class="subject">Essentials of Cyber Security</span></div></div>
+                <div class="grid-cell row-span-2">
+                    <div class="class-item split-class" id="wed-11-cs" data-spec="CS"><span class="spec-label cs">CS</span><span class="subject">Software Engineering Lab</span></div>
+                    <div class="class-item split-class" id="wed-11-cc" data-spec="CC"><span class="spec-label cc">CC</span><span class="subject">Computer Network Lab</span></div>
+                </div>
+                <div class="grid-cell row-span-2">
+                     <div class="class-item split-class" id="thu-11-cs" data-spec="CS"><span class="spec-label cs">CS</span><span class="subject">Linux and Shell Programming Lab</span></div>
+                     <div class="class-item split-class" id="thu-11-cc" data-spec="CC"><span class="spec-label cc">CC</span><span class="subject">Computer Network Lab</span></div>
+                </div>
                 <div class="grid-cell"><div class="class-item" id="fri-11-both" data-spec="BOTH"><span class="subject">Computer Network</span></div></div>
-                <div class="grid-cell row-span-2"><div class="class-item split-class" id="sat-11-cs" data-spec="CS"><span class="spec-label cs">CS</span><span class="subject">Essentials of Cybersecurity Lab</span></div><div class="class-item split-class" id="sat-11-cc" data-spec="CC"><span class="spec-label cc">CC</span><span class="subject">SEC3 (MATLAB)</span></div></div>
+                <div class="grid-cell row-span-2">
+                    <div class="class-item split-class" id="sat-11-cs" data-spec="CS"><span class="spec-label cs">CS</span><span class="subject">Essentials of Cyber Security Lab</span></div>
+                    <div class="class-item split-class" id="sat-11-cc" data-spec="CC"><span class="spec-label cc">CC</span><span class="subject">SEC-III (MATLAB)</span></div>
+                </div>
+
+                <!-- Time Slot 4: 12:00 - 13:00 -->
                 <div class="time-slot">12:00<span>|</span>1:00</div>
+                <div class="grid-cell"><div class="class-item" id="mon-12-both" data-spec="BOTH"><span class="subject">Software Engineering Lab</span></div></div>
+                <div class="grid-cell"><div class="class-item" id="tue-12-both" data-spec="BOTH"><span class="subject">Software Engineering</span></div></div>
                 <div class="grid-cell"><div class="class-item" id="fri-12-both" data-spec="BOTH"><span class="subject">Software Engineering</span></div></div>
+                
+                <!-- Lunch Break -->
                 <div class="time-slot lunch-slot">1:00 PM - 1:30 PM &nbsp; LUNCH</div>
+
+                <!-- Time Slot 5: 13:30 - 14:30 -->
                 <div class="time-slot">1:30<span>|</span>2:30</div>
                 <div class="grid-cell"><div class="class-item" id="mon-13-both" data-spec="BOTH"><span class="subject">Computer Network</span></div></div>
-                <div class="grid-cell"></div>
-                <div class="grid-cell row-span-2"><div class="class-item split-class" id="wed-13-cs" data-spec="CS"><span class="spec-label cs">CS</span><span class="subject">SEC3 (MATLAB)</span></div><div class="class-item split-class" id="wed-13-cc" data-spec="CC"><span class="spec-label cc">CC</span><span class="subject">Private Cloud Environment Lab</span></div></div>
+                <div class="grid-cell"><div class="class-item" id="tue-13-both" data-spec="BOTH"><span class="subject">Personality Development & Career Building</span></div></div>
+                <div class="grid-cell row-span-2">
+                    <div class="class-item split-class" id="wed-13-cs" data-spec="CS"><span class="spec-label cs">CS</span><span class="subject">SEC-III (MATLAB)</span></div>
+                    <div class="class-item split-class" id="wed-13-cc" data-spec="CC"><span class="spec-label cc">CC</span><span class="subject">Private cloud environment Lab</span></div>
+                </div>
                 <div class="grid-cell"><div class="class-item" id="thu-13-both" data-spec="BOTH"><span class="subject">Blockchain Policy</span></div></div>
-                <div class="grid-cell row-span-2"><div class="class-item split-class" id="fri-13-cs" data-spec="CS"><span class="spec-label cs">CS</span><span class="subject">SEC3 (MATLAB)</span></div><div class="class-item split-class" id="fri-13-cc" data-spec="CC"><span class="spec-label cc">CC</span><span class="subject">Private Cloud Environment Lab</span></div></div>
+                <div class="grid-cell row-span-2">
+                    <div class="class-item split-class" id="fri-13-cs" data-spec="CS"><span class="spec-label cs">CS</span><span class="subject">SEC-III (MATLAB)</span></div>
+                    <div class="class-item split-class" id="fri-13-cc" data-spec="CC"><span class="spec-label cc">CC</span><span class="subject">Private cloud environment Lab</span></div>
+                </div>
                 <div class="grid-cell"><div class="class-item" id="sat-13-both" data-spec="BOTH"><span class="subject">Linux and Shell Programming</span></div></div>
+
+                <!-- Time Slot 6: 14:30 - 15:30 -->
                 <div class="time-slot">2:30<span>|</span>3:30</div>
-                <div class="grid-cell"><div class="class-item" id="mon-14-both" data-spec="BOTH"><span class="subject">Linux and Shell Programming</span></div></div>
-                <div class="grid-cell"></div>
-                <div class="grid-cell"><div class="class-item" id="thu-14-both" data-spec="BOTH"><span class="subject">Data Mining and Data Modeling</span></div></div>
+                <div class="grid-cell"><div class="class-item" id="mon-14-both" data-spec="BOTH"><span class="subject">Mentor Mentee Session</span></div></div>
+                <div class="grid-cell"><div class="class-item" id="tue-14-both" data-spec="BOTH"><span class="subject">Industrial Training-I</span></div></div>
+                <div class="grid-cell"><div class="class-item" id="thu-14-both" data-spec="BOTH"><span class="subject">Automata Theory and Computability</span></div></div>
                 <div class="grid-cell"><div class="class-item" id="sat-14-both" data-spec="BOTH"><span class="subject">Personality Development & Career Building</span></div></div>
+
+                <!-- Time Slot 7: 15:30 - 16:30 -->
                 <div class="time-slot">3:30<span>|</span>4:30</div>
-                <div class="grid-cell"><div class="class-item" id="mon-15-both" data-spec="BOTH"><span class="subject">Software Engineering</span></div></div>
+                <div class="grid-cell"><div class="class-item" id="mon-15-both" data-spec="BOTH"><span class="subject">Data Mining and Predictive Modelling</span></div></div>
                 <div class="grid-cell"></div>
-                <div class="grid-cell"><div class="class-item" id="wed-15-both" data-spec="BOTH"><span class="subject">Mentor Mentee Session</span></div></div>
-                <div class="grid-cell"><div class="class-item" id="thu-15-both" data-spec="BOTH"><span class="subject">Private Cloud Environment</span></div></div>
-                <div class="grid-cell"><div class="class-item" id="fri-15-both" data-spec="BOTH"><span class="subject">Private Cloud Environment</span></div></div>
+                <div class="grid-cell">
+                    <div class="class-item split-class" id="wed-15-cs" data-spec="CS"><span class="spec-label cs">CS</span><span class="subject">Linux and Shell Programming</span></div>
+                    <div class="class-item split-class" id="wed-15-cc" data-spec="CC"><span class="spec-label cc">CC</span><span class="subject"></span></div>
+                </div>
+                <div class="grid-cell"><div class="class-item" id="thu-15-both" data-spec="BOTH"><span class="subject">Private cloud environment</span></div></div>
+                <div class="grid-cell"><div class="class-item" id="fri-15-both" data-spec="BOTH"><span class="subject">Private cloud environment</span></div></div>
                 <div class="grid-cell"><div class="class-item" id="sat-15-both" data-spec="BOTH"><span class="subject">Automata Theory and Computability</span></div></div>
             </div>
         </div>
@@ -98,6 +517,288 @@
         </div>
     </div>
 
-<script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- Element Selectors ---
+            const modal = document.getElementById('task-modal');
+            const closeModalBtn = document.querySelector('.close-button');
+            const saveBtn = document.getElementById('save-btn');
+            const classItems = document.querySelectorAll('.class-item');
+            const modalTitle = document.getElementById('modal-title');
+            const taskInput = document.getElementById('task-input');
+            const addTaskBtn = document.getElementById('add-task-btn');
+            const taskList = document.getElementById('task-list');
+            const notesArea = document.getElementById('notes-area');
+            const clockElement = document.getElementById('clock');
+            const viewButtons = document.querySelectorAll('.view-controls button');
+            const container = document.querySelector('.container');
+            const reminderDateInput = document.getElementById('reminder-date');
+            const reminderToggle = document.getElementById('reminder-toggle');
+            const generatePlanBtn = document.getElementById('generate-plan-btn');
+            const summarizeNotesBtn = document.getElementById('summarize-notes-btn');
+            const geminiLoader = document.getElementById('gemini-loader');
+
+            // --- State Management ---
+            let currentItemId = null;
+            let classData = {};
+
+            // --- Gemini API Function ---
+            async function callGemini(prompt) {
+                geminiLoader.style.display = 'block';
+                let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+                const payload = { contents: chatHistory };
+                const apiKey = ""; // API key will be injected by the environment
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`API request failed with status ${response.status}`);
+                    }
+
+                    const result = await response.json();
+                    
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        return result.candidates[0].content.parts[0].text;
+                    } else {
+                        // Check for safety ratings or other issues
+                        console.error("Gemini API response structure unexpected or content blocked:", result);
+                        return "Sorry, I couldn't generate a response. It might have been blocked for safety reasons.";
+                    }
+                } catch (error) {
+                    console.error("Error calling Gemini API:", error);
+                    return "Sorry, an error occurred while contacting the AI. Please check the console for details.";
+                } finally {
+                    geminiLoader.style.display = 'none';
+                }
+            }
+
+
+            // --- Core Functions ---
+            function updateClock() {
+                const now = new Date();
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Asia/Kolkata' };
+                const dateString = now.toLocaleDateString('en-US', options);
+                const timeString = now.toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: 'Asia/Kolkata' });
+                clockElement.innerHTML = `${dateString}<br>${timeString} (IST)`;
+            }
+
+            function loadAllData() {
+                classItems.forEach(item => {
+                    const id = item.id;
+                    if (!id) return;
+                    const data = localStorage.getItem(id);
+                    if (data) {
+                        try {
+                           classData[id] = JSON.parse(data);
+                        } catch(e) {
+                            console.error(`Could not parse JSON for item ${id}:`, data);
+                        }
+                    }
+                });
+                checkReminders();
+            }
+
+            function renderTasks(itemId) {
+                taskList.innerHTML = '';
+                const data = classData[itemId];
+                if (data && data.tasks) {
+                    data.tasks.forEach((task, index) => {
+                        const li = document.createElement('li');
+                        li.dataset.index = index;
+                        if (task.completed) li.classList.add('completed');
+                        
+                        let taskHTML = `<span>${task.text}</span>`;
+                        if(task.reminderActive && task.reminderDate) {
+                            taskHTML += `<span class="task-date"> (Due: ${task.reminderDate})</span>`;
+                        }
+                        taskHTML += `<button class="delete-task" title="Delete Task">✖</button>`;
+                        li.innerHTML = taskHTML;
+                        taskList.appendChild(li);
+                    });
+                }
+            }
+
+            function openModal(item) {
+                currentItemId = item.id;
+                const spec = item.dataset.spec;
+                let titlePrefix = '';
+                if (spec === 'CS') titlePrefix = 'Cyber Security: ';
+                if (spec === 'CC') titlePrefix = 'Cloud Computing: ';
+                const subjectSpan = item.querySelector('.subject');
+                modalTitle.innerHTML = subjectSpan ? titlePrefix + subjectSpan.outerHTML : 'Details';
+
+                const data = classData[currentItemId] || {};
+                notesArea.value = data.notes || '';
+                renderTasks(currentItemId);
+
+                modal.style.display = 'block';
+                taskInput.focus();
+            }
+
+            function closeModalFunction() {
+                if (currentItemId) {
+                    const data = classData[currentItemId] || {};
+                    data.notes = notesArea.value;
+                    
+                    if ((data.tasks && data.tasks.length > 0) || (data.notes && data.notes.trim() !== '')) {
+                         localStorage.setItem(currentItemId, JSON.stringify(data));
+                    } else {
+                        localStorage.removeItem(currentItemId);
+                        delete classData[currentItemId];
+                    }
+                }
+                modal.style.display = 'none';
+                clearModalInputs();
+                checkReminders();
+            }
+            
+            function clearModalInputs() {
+                taskInput.value = '';
+                taskList.innerHTML = '';
+                notesArea.value = '';
+                reminderDateInput.value = '';
+                reminderToggle.checked = false;
+                currentItemId = null;
+            }
+
+            function addTask() {
+                const taskText = taskInput.value.trim();
+                if (taskText === '' || !currentItemId) return;
+
+                const task = {
+                    text: taskText,
+                    completed: false,
+                    reminderDate: reminderDateInput.value,
+                    reminderActive: reminderToggle.checked
+                };
+
+                if (!classData[currentItemId]) classData[currentItemId] = { tasks: [], notes: '' };
+                if (!classData[currentItemId].tasks) classData[currentItemId].tasks = [];
+
+                classData[currentItemId].tasks.push(task);
+                renderTasks(currentItemId);
+
+                taskInput.value = '';
+                reminderDateInput.value = '';
+                reminderToggle.checked = false;
+                taskInput.focus();
+            }
+
+            function handleTaskListClick(e) {
+                const li = e.target.closest('li');
+                if (!li || !currentItemId) return;
+                
+                const index = parseInt(li.dataset.index, 10);
+                const tasks = classData[currentItemId].tasks;
+
+                if (e.target.classList.contains('delete-task')) {
+                    tasks.splice(index, 1);
+                } else if (e.target.tagName === 'SPAN') {
+                    tasks[index].completed = !tasks[index].completed;
+                }
+                renderTasks(currentItemId);
+            }
+            
+            function checkReminders() {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                const tomorrow = new Date(today);
+                tomorrow.setDate(today.getDate() + 1);
+
+                classItems.forEach(item => {
+                    const id = item.id;
+                    const data = classData[id];
+                    let hasReminder = false;
+                    if (data && data.tasks) {
+                        hasReminder = data.tasks.some(task => {
+                            if (!task.reminderActive || !task.reminderDate) return false;
+                            const reminderDate = new Date(task.reminderDate + 'T00:00:00');
+                            return reminderDate.getTime() === tomorrow.getTime();
+                        });
+                    }
+                    if (hasReminder) {
+                        item.classList.add('reminder-alert');
+                    } else {
+                        item.classList.remove('reminder-alert');
+                    }
+                });
+            }
+
+            // --- Gemini Feature Functions ---
+            async function generateStudyPlan() {
+                if (!currentItemId) return;
+                const data = classData[currentItemId];
+                const subject = document.getElementById(currentItemId)?.querySelector('.subject')?.textContent || 'this class';
+
+                if (!data || !data.tasks || data.tasks.length === 0) {
+                    notesArea.value = "Add some tasks to your to-do list first, then I can generate a study plan!";
+                    return;
+                }
+
+                const taskListString = data.tasks.map(t => `- ${t.text}${t.reminderDate ? ` (Due: ${t.reminderDate})` : ''}`).join('\n');
+                const prompt = `You are an expert academic planner. For a college-level class on "${subject}", create a detailed study plan to prepare for the following tasks:\n${taskListString}\n\nBreak down the plan into manageable daily or weekly sessions. Suggest specific topics to focus on for each session. The current date is ${new Date().toLocaleDateString()}.`;
+                
+                const plan = await callGemini(prompt);
+                notesArea.value += `\n\n--- AI Study Plan ---\n${plan}`;
+            }
+
+            async function summarizeNotes() {
+                if (!currentItemId) return;
+                const subject = document.getElementById(currentItemId)?.querySelector('.subject')?.textContent || 'this class';
+                const currentNotes = notesArea.value;
+
+                if (currentNotes.trim().length < 50) { // Don't summarize very short notes
+                    alert("Not enough text to summarize. Write some more notes first!");
+                    return;
+                }
+
+                const prompt = `Please summarize the following academic notes for a "${subject}" class into concise key points using bullet points:\n\n---\n${currentNotes}\n---`;
+                const summary = await callGemini(prompt);
+                notesArea.value = `--- AI Summary ---\n${summary}\n\n--- Original Notes ---\n${currentNotes}`;
+            }
+
+            // --- Initial Setup & Event Listeners ---
+            setInterval(updateClock, 1000);
+            updateClock();
+            loadAllData();
+            setInterval(checkReminders, 60000);
+
+            classItems.forEach(item => {
+                if (item.querySelector('.subject')) {
+                    item.addEventListener('click', () => openModal(item));
+                } else {
+                    item.style.cursor = 'default';
+                }
+            });
+
+            viewButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    viewButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    container.className = 'container'; 
+                    const view = button.dataset.view;
+                    if (view === 'cs') container.classList.add('view-cs');
+                    else if (view === 'cc') container.classList.add('view-cc');
+                });
+            });
+
+            closeModalBtn.onclick = closeModalFunction;
+            saveBtn.onclick = closeModalFunction;
+            window.onclick = (event) => { if (event.target == modal) closeModalFunction(); };
+            addTaskBtn.addEventListener('click', addTask);
+            taskList.addEventListener('click', handleTaskListClick);
+            generatePlanBtn.addEventListener('click', generateStudyPlan);
+            summarizeNotesBtn.addEventListener('click', summarizeNotes);
+        });
+    </script>
 </body>
 </html>
