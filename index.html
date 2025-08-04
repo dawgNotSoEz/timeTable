@@ -4,52 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Backhodi Time Table</title>
+    <!-- Google Fonts for a modern look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
+        /* --- KEYFRAMES --- */
         @keyframes animated-gradient {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
         @keyframes reminder-glow {
-            0% { box-shadow: 0 0 5px #ff4d4d, 0 0 10px #ff4d4d, inset 0 0 5px rgba(255, 77, 77, 0.5); }
-            50% { box-shadow: 0 0 20px #ff4d4d, 0 0 30px #ff4d4d, inset 0 0 10px rgba(255, 77, 77, 0.5); }
-            100% { box-shadow: 0 0 5px #ff4d4d, 0 0 10px #ff4d4d, inset 0 0 5px rgba(255, 77, 77, 0.5); }
+            0% { box-shadow: 0 0 8px #ff5c5c, 0 0 12px #ff5c5c, inset 0 0 8px rgba(255, 92, 92, 0.5); }
+            50% { box-shadow: 0 0 25px #ff5c5c, 0 0 40px #ff5c5c, inset 0 0 12px rgba(255, 92, 92, 0.5); }
+            100% { box-shadow: 0 0 8px #ff5c5c, 0 0 12px #ff5c5c, inset 0 0 8px rgba(255, 92, 92, 0.5); }
         }
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
 
+        /* --- ROOT VARIABLES --- */
         :root {
-            /* Neon Matrix Palette */
-            --primary-bg: #0d0221;
-            --secondary-bg-rgba: rgba(10, 25, 47, 0.85);
-            --cell-bg-rgba: rgba(23, 42, 69, 0.75);
+            /* Glassmorphism Palette */
             --text-color: #f0f0f0;
-            --neon-cyan: #00f6ff;
-            --neon-pink: #ff00ff;
-            --neon-green: #39ff14;
-            --neon-red: #ff4d4d;
-            --border-glow: rgba(0, 246, 255, 0.3);
-            --modal-bg: #0d0221;
-            --cs-color: var(--neon-cyan);
-            --cc-color: var(--neon-pink);
-            --lunch-bg: rgba(44, 62, 80, 0.8);
-
-            /* Day-specific Gradients */
-            --monday-grad: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
-            --tuesday-grad: linear-gradient(135deg, #f7971e 0%, #ffd200 100%);
-            --wednesday-grad: linear-gradient(135deg, #8e2de2 0%, #4a00e0 100%);
-            --thursday-grad: linear-gradient(135deg, #d66d75 0%, #e29587 100%);
-            --friday-grad: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-            --saturday-grad: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+            --accent-color: #8A2BE2; /* BlueViolet */
+            --cs-color: #00BFFF; /* DeepSkyBlue */
+            --cc-color: #FF69B4; /* HotPink */
+            --reminder-red: #ff5c5c;
+            --success-green: #32CD32;
         }
 
+        /* --- GENERAL STYLES --- */
         body {
-            font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
-            background: linear-gradient(270deg, #0d0221, #0a192f, #240b36);
-            background-size: 600% 600%;
-            animation: animated-gradient 16s ease infinite;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: animated-gradient 15s ease infinite;
             color: var(--text-color);
             margin: 0;
             padding: 10px;
@@ -58,12 +50,16 @@
         .container {
             max-width: 1600px;
             margin: auto;
-            backdrop-filter: blur(3px);
         }
 
+        /* --- HEADER & CONTROLS --- */
         .header {
             text-align: center;
             margin-bottom: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
         }
 
         h1 {
@@ -71,53 +67,42 @@
             font-size: 3em;
             margin: 0;
             font-weight: 700;
-            text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 20px var(--neon-pink), 0 0 30px var(--neon-pink), 0 0 40px var(--neon-pink);
         }
 
         #clock {
             font-size: 1.2em;
-            background-color: var(--secondary-bg-rgba);
+            background: rgba(0, 0, 0, 0.25);
             padding: 10px 15px;
-            border-radius: 8px;
+            border-radius: 10px;
             display: inline-block;
             margin: 15px 0;
-            border: 1px solid var(--neon-cyan);
-            box-shadow: 0 0 10px var(--border-glow);
-        }
-
-        .view-controls {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .view-controls button {
-            background: transparent;
-            border: 2px solid var(--neon-pink);
-            color: var(--neon-pink);
-            padding: 8px 15px;
-            margin: 0;
-            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 10px 20px;
+            margin: 0 5px;
+            border-radius: 10px;
             cursor: pointer;
             font-size: 0.9em;
-            font-weight: bold;
+            font-weight: 600;
             transition: all 0.3s ease;
-            text-shadow: 0 0 5px var(--neon-pink);
         }
 
         .view-controls button:hover {
-            background-color: var(--neon-pink);
-            color: var(--primary-bg);
-            box-shadow: 0 0 20px var(--neon-pink);
+            background: rgba(255, 255, 255, 0.2);
         }
 
         .view-controls button.active {
-            background-color: var(--neon-pink);
-            color: var(--primary-bg);
-            box-shadow: 0 0 25px var(--neon-pink);
+            background: #fff;
+            color: #111;
+            box-shadow: 0 0 15px rgba(255,255,255,0.5);
         }
 
+        /* --- TIMETABLE GRID --- */
         .timetable-container {
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
@@ -126,64 +111,43 @@
         .timetable-grid {
             display: grid;
             grid-template-columns: 80px repeat(6, 1fr); 
-            grid-template-rows: auto repeat(8, 1fr); 
-            gap: 8px;
+            grid-template-rows: auto repeat(7, 1fr); 
+            gap: 10px;
         }
 
         .grid-header, .time-slot, .grid-cell {
-            background-color: var(--secondary-bg-rgba);
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
             padding: 10px;
             text-align: center;
-            border-radius: 8px;
-            font-weight: bold;
+            font-weight: 600;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 1px solid var(--neon-cyan);
-            box-shadow: inset 0 0 8px var(--border-glow);
             transition: all 0.3s ease;
         }
         
-        .grid-cell:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px var(--border-glow), inset 0 0 8px var(--border-glow);
-        }
-        
         .grid-header {
-            color: white;
+            background: rgba(0, 0, 0, 0.25);
             font-size: 1.2em;
-            border: none;
-            box-shadow: none;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.4);
         }
 
-        .timetable-grid .grid-header:nth-of-type(2) { background-image: var(--monday-grad); }
-        .timetable-grid .grid-header:nth-of-type(3) { background-image: var(--tuesday-grad); }
-        .timetable-grid .grid-header:nth-of-type(4) { background-image: var(--wednesday-grad); }
-        .timetable-grid .grid-header:nth-of-type(5) { background-image: var(--thursday-grad); }
-        .timetable-grid .grid-header:nth-of-type(6) { background-image: var(--friday-grad); }
-        .timetable-grid .grid-header:nth-of-type(7) { background-image: var(--saturday-grad); }
-        
         .time-slot {
             font-size: 0.8em;
             flex-direction: column;
-            color: var(--neon-cyan);
-            text-shadow: 0 0 5px var(--border-glow);
-            writing-mode: vertical-rl;
-            text-orientation: mixed;
-            padding: 5px;
         }
-        
+
         .lunch-slot {
-            writing-mode: horizontal-tb;
             grid-column: 1 / -1;
-            background-color: var(--lunch-bg);
+            background: rgba(0, 0, 0, 0.3);
             font-size: 1.2em;
         }
 
         .grid-cell {
-            background-color: var(--cell-bg-rgba);
-            min-height: 80px;
+            min-height: 90px;
             padding: 0;
             flex-direction: column;
             overflow: hidden;
@@ -194,178 +158,114 @@
             flex-grow: 1;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
             cursor: pointer;
             position: relative;
-            font-size: 0.8em;
-            padding: 5px;
+            font-size: 0.9em;
+            padding: 8px 5px;
             width: 100%;
             height: 100%;
-            transition: all 0.5s ease;
         }
-        
+
         .class-item.reminder-alert {
-            border: 1px solid var(--neon-red);
             animation: reminder-glow 2s infinite ease-in-out;
         }
 
         .split-class {
-            border-top: 1px dashed var(--neon-pink);
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
         }
         .split-class:first-child {
             border-top: none;
         }
-        
+
         .row-span-2 { grid-row: span 2; }
-        
+
         .subject {
-            font-weight: bold;
+            font-weight: 700;
             color: #fff;
-            font-size: 1em;
+            font-size: 1.1em;
             text-align: center;
-            text-shadow: 0 0 3px #fff;
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 5px;
         }
         
+        .class-info {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            padding: 5px 8px 0;
+            margin-top: 5px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 0.9em;
+        }
+
+        .teacher {
+            opacity: 0.8;
+        }
+
+        .room {
+            font-style: italic;
+            opacity: 0.8;
+        }
+
         .spec-label {
             position: absolute;
             top: 5px;
             left: 5px;
-            font-weight: bold;
-            padding: 2px 5px;
-            border-radius: 3px;
-            font-size: 0.7em;
-            color: #000;
-            box-shadow: 0 0 8px;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 7px;
+            font-size: 0.75em;
+            color: #fff;
         }
         .spec-label.cs {
             background-color: var(--cs-color);
-            box-shadow: 0 0 8px var(--cs-color);
         }
         .spec-label.cc {
             background-color: var(--cc-color);
-            box-shadow: 0 0 8px var(--cc-color);
         }
 
+        /* --- VIEW FILTERING --- */
         .container.view-cs .class-item[data-spec="CC"],
         .container.view-cs .split-class[data-spec="CC"] { display: none; }
         .container.view-cc .class-item[data-spec="CS"],
         .container.view-cc .split-class[data-spec="CS"] { display: none; }
-
         .container.view-cs .grid-cell .split-class[data-spec="CS"]:first-child,
         .container.view-cc .grid-cell .split-class[data-spec="CC"]:first-child {
              border-top: none;
         }
 
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.7); backdrop-filter: blur(5px); }
-        .modal-content { background-color: var(--modal-bg); margin: 10% auto; padding: 25px; border: 1px solid var(--neon-pink); width: 90%; max-width: 600px; border-radius: 10px; animation: fadeIn 0.3s; box-shadow: 0 0 25px var(--neon-pink); }
+        /* --- MODAL STYLES --- */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); backdrop-filter: blur(8px); }
+        .modal-content { background: rgba(13, 2, 33, 0.8); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); margin: 10% auto; padding: 25px; border: 1px solid rgba(255, 255, 255, 0.2); width: 90%; max-width: 600px; border-radius: 15px; animation: fadeIn 0.3s; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--neon-pink); padding-bottom: 15px; margin-bottom: 20px; }
-        .modal-header h2 { margin: 0; color: var(--neon-pink); font-size: 1.5em; text-shadow: 0 0 10px var(--neon-pink); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.2); padding-bottom: 15px; margin-bottom: 20px; }
+        .modal-header h2 { margin: 0; color: #fff; font-size: 1.5em; }
         .close-button { color: var(--text-color); font-size: 28px; font-weight: bold; cursor: pointer; }
-        
-        .modal-body h3 {
-            color: var(--neon-cyan);
-            border-bottom: 1px solid var(--neon-cyan);
-            padding-bottom: 5px;
-            margin-bottom: 15px;
-        }
-        
-        #task-input-area, #reminder-area {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-        }
-        #task-input {
-            flex-grow: 1;
-            background-color: transparent;
-            border: 1px solid var(--neon-cyan);
-            color: var(--text-color);
-            padding: 10px;
-            border-radius: 5px;
-        }
-        #add-task-btn { background-color: var(--neon-green); color: #000; border: none; padding: 10px 15px; border-radius: 5px; font-weight: bold; cursor: pointer; }
-        #reminder-date {
-            background-color: transparent;
-            border: 1px solid var(--neon-cyan);
-            color: var(--text-color);
-            padding: 8px;
-            border-radius: 5px;
-            color-scheme: dark;
-        }
-        #reminder-toggle-label {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            cursor: pointer;
-        }
-        
+        .modal-body h3 { color: #fff; border-bottom: 1px solid rgba(255, 255, 255, 0.2); padding-bottom: 5px; margin-bottom: 15px; }
+        #task-input { flex-grow: 1; background-color: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); color: var(--text-color); padding: 10px; border-radius: 8px; }
+        #add-task-btn { background-color: var(--success-green); color: #fff; border: none; padding: 10px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        #reminder-date { background-color: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); color: var(--text-color); padding: 8px; border-radius: 8px; color-scheme: dark; }
         #task-list { list-style: none; padding: 0; max-height: 150px; overflow-y: auto; }
-        #task-list li { background: var(--secondary-bg-rgba); padding: 10px; margin-bottom: 5px; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; border-left: 3px solid var(--neon-green); }
-        #task-list li.completed span { text-decoration: line-through; opacity: 0.6; }
-        #task-list li .task-date { font-size: 0.8em; opacity: 0.7; margin-left: 10px; }
-        .delete-task { background: none; border: none; color: var(--neon-red); font-size: 1.2em; cursor: pointer; }
-        
+        #task-list li { background: rgba(255, 255, 255, 0.1); padding: 10px; margin-bottom: 5px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; border-left: 3px solid var(--success-green); }
         .modal-footer { text-align: right; margin-top: 20px; }
-        #save-btn { background-color: var(--neon-pink); color: #000; border: none; padding: 12px 25px; border-radius: 5px; font-weight: bold; cursor: pointer; }
-
-        .gemini-btn {
-            background-color: transparent;
-            border: 1px solid var(--neon-green);
-            color: var(--neon-green);
-            padding: 8px 12px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            margin-top: 10px;
-            display: block;
-            width: 100%;
-            text-align: center;
-        }
-        .gemini-btn:hover {
-            background-color: var(--neon-green);
-            color: var(--primary-bg);
-            box-shadow: 0 0 15px var(--neon-green);
-        }
-        #notes-controls {
-            display: flex;
-            justify-content: flex-end;
-            margin-bottom: 5px;
-        }
-        #notes-controls .gemini-btn {
-            display: inline-block;
-            width: auto;
-            margin-top: 0;
-        }
-        .loader {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid var(--neon-pink);
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
-        }
-
-        /* --- Responsive Styles for Mobile --- */
+        #save-btn { background-color: var(--accent-color); color: #fff; border: none; padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .gemini-btn { border: 1px solid var(--success-green); color: var(--success-green); }
+        .gemini-btn:hover { background-color: var(--success-green); color: #fff; box-shadow: 0 0 15px var(--success-green); }
+        .loader { border-top: 4px solid var(--accent-color); }
+        
+        /* --- RESPONSIVE STYLES --- */
         @media (max-width: 768px) {
             body { padding: 5px; }
-            h1 { font-size: 1.8em; text-shadow: 0 0 5px #fff, 0 0 10px var(--neon-pink); }
-            #clock { font-size: 1em; }
-            .view-controls button { font-size: 0.8em; padding: 8px 12px; }
-            .timetable-container { overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid var(--border-glow); border-radius: 8px; padding-bottom: 10px; }
+            h1 { font-size: 1.8em; }
             .timetable-grid { min-width: 800px; }
             .timetable-grid > .grid-header:first-child,
-            .timetable-grid > .time-slot:not(.lunch-slot) { position: sticky; left: 0; z-index: 10; background: var(--primary-bg); border-right: 1px solid var(--neon-cyan); }
-            .grid-header { font-size: 1em; }
-            .time-slot { writing-mode: horizontal-tb; padding: 5px; min-height: 70px; font-size: 0.8em; }
-            .lunch-slot { font-size: 1em; }
-            .grid-cell { min-height: 70px; }
-            .class-item { font-size: 0.8em; }
-            .subject { font-size: 0.9em; }
-            .spec-label { font-size: 0.7em; }
+            .timetable-grid > .time-slot:not(.lunch-slot) { position: sticky; left: 0; z-index: 10; background: var(--primary-bg); }
+            .time-slot { writing-mode: horizontal-tb; }
         }
     </style>
 </head>
@@ -390,104 +290,97 @@
                 <!-- Time Slot 1: 9:00 - 10:00 -->
                 <div class="time-slot">9:00<span>|</span>10:00</div>
                 <div class="grid-cell row-span-2">
-                    <div class="class-item split-class" id="mon-9-cs" data-spec="CS"><span class="spec-label cs">CS</span><span class="subject">Linux and Shell Programming Lab</span></div>
-                    <div class="class-item split-class" id="mon-9-cc" data-spec="CC"><span class="spec-label cc">CC</span><span class="subject">Essentials of Cyber Security Lab</span></div>
+                    <div class="class-item split-class" id="mon-9-cs" data-spec="CS"><span class="spec-label cs">CS</span><span class="subject">Linux & Shell Programming Lab</span><div class="class-info"><span class="room">13</span><span class="teacher">Neha</span></div></div>
+                    <div class="class-item split-class" id="mon-9-cc" data-spec="CC"><span class="spec-label cc">CC</span><span class="subject">Essentials of Cyber Security Lab</span><div class="class-info"><span class="room">12</span><span class="teacher">Satnam</span></div></div>
                 </div>
                 <div class="grid-cell row-span-2">
-                    <div class="class-item split-class" id="tue-9-cs" data-spec="CS"><span class="spec-label cs">CS</span><span class="subject">Essentials of Cyber Security Lab</span></div>
-                    <div class="class-item split-class" id="tue-9-cc" data-spec="CC"><span class="spec-label cc">CC</span><span class="subject">Software Engineering Lab</span></div>
+                    <div class="class-item split-class" id="tue-9-cs" data-spec="CS"><span class="spec-label cs">CS</span><span class="subject">SEC-III (MATLAB)</span><div class="class-info"><span class="room">414</span><span class="teacher">Sonu</span></div></div>
+                    <div class="class-item split-class" id="tue-9-cc" data-spec="CC"><span class="spec-label cc">CC</span><span class="subject">Software Engineering Lab</span><div class="class-info"><span class="room">14</span><span class="teacher">Charvi</span></div></div>
                 </div>
                 <div class="grid-cell row-span-2">
-                    <div class="class-item split-class" id="wed-9-cs" data-spec="CS"><span class="spec-label cs">CS</span><span class="subject">Computer Network Lab</span></div>
-                    <div class="class-item split-class" id="wed-9-cc" data-spec="CC"><span class="spec-label cc">CC</span><span class="subject">Essentials of Cyber Security Lab</span></div>
+                    <div class="class-item split-class" id="wed-9-cs" data-spec="CS"><span class="spec-label cs">CS</span><span class="subject">Computer Network Lab</span><div class="class-info"><span class="room">408</span><span class="teacher">Chhavi</span></div></div>
+                    <div class="class-item split-class" id="wed-9-cc" data-spec="CC"><span class="spec-label cc">CC</span><span class="subject">Essentials of Cyber Security Lab</span><div class="class-info"><span class="room">12</span><span class="teacher">Satnam</span></div></div>
                 </div>
                 <div class="grid-cell row-span-2">
-                    <div class="class-item split-class" id="thu-9-cs" data-spec="CS"><span class="spec-label cs">CS</span><span class="subject">Software Engineering Lab</span></div>
-                    <div class="class-item split-class" id="thu-9-cc" data-spec="CC"><span class="spec-label cc">CC</span><span class="subject">SEC-III (MATLAB)</span></div>
+                    <div class="class-item split-class" id="thu-9-cs" data-spec="CS"><span class="spec-label cs">CS</span><span class="subject">Software Engineering Lab</span><div class="class-info"><span class="room">420</span><span class="teacher">Charvi</span></div></div>
+                    <div class="class-item split-class" id="thu-9-cc" data-spec="CC"><span class="spec-label cc">CC</span><span class="subject">SEC-III (MATLAB)</span><div class="class-info"><span class="room">414</span><span class="teacher">Sonu</span></div></div>
                 </div>
-                <div class="grid-cell">
-                     <div class="class-item" id="fri-9-both" data-spec="BOTH"><span class="subject">Data Mining and Predictive Modelling</span></div>
-                </div>
-                <div class="grid-cell">
-                     <div class="class-item" id="sat-9-both" data-spec="BOTH"><span class="subject">Blockchain Policy</span></div>
-                </div>
+                <div class="grid-cell"><div class="class-item" id="fri-9-both" data-spec="BOTH"><span class="subject">Data Mining & Predictive Modelling</span><div class="class-info"><span class="room">422</span><span class="teacher">Kanika</span></div></div></div>
+                <div class="grid-cell"><div class="class-item" id="sat-9-both" data-spec="BOTH"><span class="subject">Blockchain Policy</span><div class="class-info"><span class="room">412</span><span class="teacher">Anand</span></div></div></div>
 
                 <!-- Time Slot 2: 10:00 - 11:00 -->
                 <div class="time-slot">10:00<span>|</span>11:00</div>
-                <div class="grid-cell">
-                     <div class="class-item" id="fri-10-both" data-spec="BOTH"><span class="subject">Automata Theory and Computability</span></div>
-                </div>
-                <div class="grid-cell">
-                    <div class="class-item" id="sat-10-both" data-spec="BOTH"><span class="subject">Essentials of Cyber Security</span></div>
-                </div>
+                <div class="grid-cell"><div class="class-item" id="fri-10-both" data-spec="BOTH"><span class="subject">Essentials of Cyber Security</span><div class="class-info"><span class="room">421</span><span class="teacher">Kavita</span></div></div></div>
+                <div class="grid-cell"><div class="class-item" id="sat-10-both" data-spec="BOTH"><span class="subject">Essentials of Cyber Security</span><div class="class-info"><span class="room">421</span><span class="teacher">Kavita</span></div></div></div>
 
                 <!-- Time Slot 3: 11:00 - 12:00 -->
                 <div class="time-slot">11:00<span>|</span>12:00</div>
-                <div class="grid-cell"><div class="class-item" id="mon-11-both" data-spec="BOTH"><span class="subject">Computer Network Lab</span></div></div>
-                <div class="grid-cell"><div class="class-item" id="tue-11-both" data-spec="BOTH"><span class="subject">Essentials of Cyber Security</span></div></div>
                 <div class="grid-cell row-span-2">
-                    <div class="class-item split-class" id="wed-11-cs" data-spec="CS"><span class="spec-label cs">CS</span><span class="subject">Software Engineering Lab</span></div>
-                    <div class="class-item split-class" id="wed-11-cc" data-spec="CC"><span class="spec-label cc">CC</span><span class="subject">Computer Network Lab</span></div>
+                    <div class="class-item split-class" id="mon-11-cs" data-spec="CS"><span class="spec-label cs">CS</span><span class="subject">Computer Network Lab</span><div class="class-info"><span class="room">409</span><span class="teacher">Chhavi</span></div></div>
+                    <div class="class-item split-class" id="mon-11-cc" data-spec="CC"><span class="spec-label cc">CC</span><span class="subject">Software Engineering Lab</span><div class="class-info"><span class="room">317</span><span class="teacher">Charvi</span></div></div>
+                </div>
+                <div class="grid-cell"><div class="class-item" id="tue-11-both" data-spec="BOTH"><span class="subject">Private cloud environment</span><div class="class-info"><span class="room">314</span><span class="teacher">Anand</span></div></div></div>
+                <div class="grid-cell row-span-2">
+                    <div class="class-item split-class" id="wed-11-cs" data-spec="CS"><span class="spec-label cs">CS</span><span class="subject">Essentials of Cyber Security Lab</span><div class="class-info"><span class="room">12</span><span class="teacher">Kavita</span></div></div>
+                    <div class="class-item split-class" id="wed-11-cc" data-spec="CC"><span class="spec-label cc">CC</span><span class="subject">Computer Network Lab</span><div class="class-info"><span class="room">408</span><span class="teacher">Kanika</span></div></div>
                 </div>
                 <div class="grid-cell row-span-2">
-                     <div class="class-item split-class" id="thu-11-cs" data-spec="CS"><span class="spec-label cs">CS</span><span class="subject">Linux and Shell Programming Lab</span></div>
-                     <div class="class-item split-class" id="thu-11-cc" data-spec="CC"><span class="spec-label cc">CC</span><span class="subject">Computer Network Lab</span></div>
+                     <div class="class-item split-class" id="thu-11-cs" data-spec="CS"><span class="spec-label cs">CS</span><span class="subject">Essentials of Cyber Security Lab</span><div class="class-info"><span class="room">419</span><span class="teacher">Kavita</span></div></div>
+                     <div class="class-item split-class" id="thu-11-cc" data-spec="CC"><span class="spec-label cc">CC</span><span class="subject">Computer Network Lab</span><div class="class-info"><span class="room">407</span><span class="teacher">Kanika</span></div></div>
                 </div>
-                <div class="grid-cell"><div class="class-item" id="fri-11-both" data-spec="BOTH"><span class="subject">Computer Network</span></div></div>
+                <div class="grid-cell"><div class="class-item" id="fri-11-both" data-spec="BOTH"><span class="subject">Computer Network</span><div class="class-info"><span class="room">416</span><span class="teacher">Vinod</span></div></div></div>
                 <div class="grid-cell row-span-2">
-                    <div class="class-item split-class" id="sat-11-cs" data-spec="CS"><span class="spec-label cs">CS</span><span class="subject">Essentials of Cyber Security Lab</span></div>
-                    <div class="class-item split-class" id="sat-11-cc" data-spec="CC"><span class="spec-label cc">CC</span><span class="subject">SEC-III (MATLAB)</span></div>
+                    <div class="class-item split-class" id="sat-11-cs" data-spec="CS"><span class="spec-label cs">CS</span><span class="subject">Linux and Shell Programming Lab</span><div class="class-info"><span class="room">409</span><span class="teacher">Neha</span></div></div>
+                    <div class="class-item split-class" id="sat-11-cc" data-spec="CC"><span class="spec-label cc">CC</span><span class="subject">SEC-III (MATLAB)</span><div class="class-info"><span class="room">408</span><span class="teacher">Sonu</span></div></div>
                 </div>
 
                 <!-- Time Slot 4: 12:00 - 13:00 -->
                 <div class="time-slot">12:00<span>|</span>1:00</div>
-                <div class="grid-cell"><div class="class-item" id="mon-12-both" data-spec="BOTH"><span class="subject">Software Engineering Lab</span></div></div>
-                <div class="grid-cell"><div class="class-item" id="tue-12-both" data-spec="BOTH"><span class="subject">Software Engineering</span></div></div>
-                <div class="grid-cell"><div class="class-item" id="fri-12-both" data-spec="BOTH"><span class="subject">Software Engineering</span></div></div>
+                <div class="grid-cell"><div class="class-item" id="tue-12-both" data-spec="BOTH"><span class="subject">Software Engineering</span><div class="class-info"><span class="room">321</span><span class="teacher">Charvi</span></div></div></div>
+                <div class="grid-cell"><div class="class-item" id="fri-12-both" data-spec="BOTH"><span class="subject">Software Engineering</span><div class="class-info"><span class="room">310</span><span class="teacher">Charvi</span></div></div></div>
                 
                 <!-- Lunch Break -->
                 <div class="time-slot lunch-slot">1:00 PM - 1:30 PM &nbsp; LUNCH</div>
 
                 <!-- Time Slot 5: 13:30 - 14:30 -->
                 <div class="time-slot">1:30<span>|</span>2:30</div>
-                <div class="grid-cell"><div class="class-item" id="mon-13-both" data-spec="BOTH"><span class="subject">Computer Network</span></div></div>
-                <div class="grid-cell"><div class="class-item" id="tue-13-both" data-spec="BOTH"><span class="subject">Personality Development & Career Building</span></div></div>
+                <div class="grid-cell"><div class="class-item" id="mon-13-both" data-spec="BOTH"><span class="subject">Computer Network</span><div class="class-info"><span class="room">416</span><span class="teacher">Vinod</span></div></div></div>
+                <div class="grid-cell"><div class="class-item" id="tue-13-both" data-spec="BOTH"><span class="subject">Personality Development & Career Building</span><div class="class-info"><span class="room">403</span><span class="teacher">English</span></div></div></div>
                 <div class="grid-cell row-span-2">
-                    <div class="class-item split-class" id="wed-13-cs" data-spec="CS"><span class="spec-label cs">CS</span><span class="subject">SEC-III (MATLAB)</span></div>
-                    <div class="class-item split-class" id="wed-13-cc" data-spec="CC"><span class="spec-label cc">CC</span><span class="subject">Private cloud environment Lab</span></div>
+                    <div class="class-item split-class" id="wed-13-cs" data-spec="CS"><span class="spec-label cs">CS</span><span class="subject">Software Engineering Lab</span><div class="class-info"><span class="room">415</span><span class="teacher">Charvi</span></div></div>
+                    <div class="class-item split-class" id="wed-13-cc" data-spec="CC"><span class="spec-label cc">CC</span><span class="subject">Private cloud environment Lab</span><div class="class-info"><span class="room">407</span><span class="teacher">Anand</span></div></div>
                 </div>
-                <div class="grid-cell"><div class="class-item" id="thu-13-both" data-spec="BOTH"><span class="subject">Blockchain Policy</span></div></div>
+                <div class="grid-cell"><div class="class-item" id="thu-13-both" data-spec="BOTH"><span class="subject">Blockchain Policy</span><div class="class-info"><span class="room">416</span><span class="teacher">Anand</span></div></div></div>
                 <div class="grid-cell row-span-2">
-                    <div class="class-item split-class" id="fri-13-cs" data-spec="CS"><span class="spec-label cs">CS</span><span class="subject">SEC-III (MATLAB)</span></div>
-                    <div class="class-item split-class" id="fri-13-cc" data-spec="CC"><span class="spec-label cc">CC</span><span class="subject">Private cloud environment Lab</span></div>
+                    <div class="class-item split-class" id="fri-13-cs" data-spec="CS"><span class="spec-label cs">CS</span><span class="subject">SEC-III (MATLAB)</span><div class="class-info"><span class="room">419</span><span class="teacher">Sonu</span></div></div>
+                    <div class="class-item split-class" id="fri-13-cc" data-spec="CC"><span class="spec-label cc">CC</span><span class="subject">Private cloud environment Lab</span><div class="class-info"><span class="room">420</span><span class="teacher">Anand</span></div></div>
                 </div>
-                <div class="grid-cell"><div class="class-item" id="sat-13-both" data-spec="BOTH"><span class="subject">Linux and Shell Programming</span></div></div>
+                <div class="grid-cell"><div class="class-item" id="sat-13-both" data-spec="BOTH"><span class="subject">Linux and Shell Programming</span><div class="class-info"><span class="room">404</span><span class="teacher">Neha</span></div></div></div>
 
                 <!-- Time Slot 6: 14:30 - 15:30 -->
                 <div class="time-slot">2:30<span>|</span>3:30</div>
                 <div class="grid-cell"><div class="class-item" id="mon-14-both" data-spec="BOTH"><span class="subject">Mentor Mentee Session</span></div></div>
-                <div class="grid-cell"><div class="class-item" id="tue-14-both" data-spec="BOTH"><span class="subject">Industrial Training-I</span></div></div>
-                <div class="grid-cell"><div class="class-item" id="thu-14-both" data-spec="BOTH"><span class="subject">Automata Theory and Computability</span></div></div>
-                <div class="grid-cell"><div class="class-item" id="sat-14-both" data-spec="BOTH"><span class="subject">Personality Development & Career Building</span></div></div>
+                <div class="grid-cell row-span-2"><div class="class-item" id="tue-14-both" data-spec="BOTH"><span class="subject">Industrial Training-I</span></div></div>
+                <div class="grid-cell"><div class="class-item" id="thu-14-both" data-spec="BOTH"><span class="subject">Automata Theory and Computability</span><div class="class-info"><span class="room">319</span><span class="teacher">Saumaya</span></div></div></div>
+                <div class="grid-cell"><div class="class-item" id="sat-14-both" data-spec="BOTH"><span class="subject">Personality Development & Career Building</span><div class="class-info"><span class="room">416</span><span class="teacher">English</span></div></div></div>
 
                 <!-- Time Slot 7: 15:30 - 16:30 -->
                 <div class="time-slot">3:30<span>|</span>4:30</div>
-                <div class="grid-cell"><div class="class-item" id="mon-15-both" data-spec="BOTH"><span class="subject">Data Mining and Predictive Modelling</span></div></div>
-                <div class="grid-cell"></div>
-                <div class="grid-cell">
-                    <div class="class-item split-class" id="wed-15-cs" data-spec="CS"><span class="spec-label cs">CS</span><span class="subject">Linux and Shell Programming</span></div>
-                    <div class="class-item split-class" id="wed-15-cc" data-spec="CC"><span class="spec-label cc">CC</span><span class="subject"></span></div>
-                </div>
-                <div class="grid-cell"><div class="class-item" id="thu-15-both" data-spec="BOTH"><span class="subject">Private cloud environment</span></div></div>
-                <div class="grid-cell"><div class="class-item" id="fri-15-both" data-spec="BOTH"><span class="subject">Private cloud environment</span></div></div>
-                <div class="grid-cell"><div class="class-item" id="sat-15-both" data-spec="BOTH"><span class="subject">Automata Theory and Computability</span></div></div>
+                <div class="grid-cell"><div class="class-item" id="mon-15-both" data-spec="BOTH"><span class="subject">Data Mining and Predictive Modelling</span><div class="class-info"><span class="room"></span><span class="teacher">Sonu</span></div></div></div>
+                <div class="grid-cell"><div class="class-item" id="wed-15-both" data-spec="BOTH"><span class="subject">Linux and Shell Programming</span><div class="class-info"><span class="room">210</span><span class="teacher">Neha</span></div></div></div>
+                <div class="grid-cell"><div class="class-item" id="thu-15-both" data-spec="BOTH"><span class="subject">Private cloud environment</span><div class="class-info"><span class="room">403</span><span class="teacher">Anand</span></div></div></div>
+                <div class="grid-cell"><div class="class-item" id="fri-15-both" data-spec="BOTH"><span class="subject">Automata Theory and Computability</span><div class="class-info"><span class="room">321</span><span class="teacher">Saumaya</span></div></div></div>
+                <div class="grid-cell"><div class="class-item" id="sat-15-both" data-spec="BOTH"><span class="subject">Automata Theory and Computability</span><div class="class-info"><span class="room">321</span><span class="teacher">Saumaya</span></div></div></div>
             </div>
         </div>
     </div>
 
     <div id="task-modal" class="modal">
         <div class="modal-content">
-            <div class="modal-header"><h2 id="modal-title"></h2><span class="close-button">&times;</span></div>
+            <div class="modal-header">
+                <h2 id="modal-title"></h2>
+                <span class="close-button">&times;</span>
+            </div>
             <div class="modal-body">
                 <h3>✅ To-Do List</h3>
                 <ul id="task-list"></ul>
@@ -495,6 +388,7 @@
                     <input type="text" id="task-input" placeholder="Add a new task...">
                 </div>
                  <button id="generate-plan-btn" class="gemini-btn">✨ Generate Study Plan</button>
+                
                 <h3>⏰ Set Reminder</h3>
                 <div id="reminder-area">
                      <input type="date" id="reminder-date">
@@ -504,6 +398,7 @@
                      </label>
                      <button id="add-task-btn">Add</button>
                 </div>
+
                 <h3>📝 Notes</h3>
                 <div id="notes-controls">
                     <button id="summarize-notes-btn" class="gemini-btn">✨ Summarize Notes</button>
@@ -548,7 +443,7 @@
                 let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
                 const payload = { contents: chatHistory };
                 const apiKey = ""; // API key will be injected by the environment
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
                 
                 try {
                     const response = await fetch(apiUrl, {
@@ -568,7 +463,6 @@
                         result.candidates[0].content.parts.length > 0) {
                         return result.candidates[0].content.parts[0].text;
                     } else {
-                        // Check for safety ratings or other issues
                         console.error("Gemini API response structure unexpected or content blocked:", result);
                         return "Sorry, I couldn't generate a response. It might have been blocked for safety reasons.";
                     }
@@ -633,7 +527,7 @@
                 if (spec === 'CS') titlePrefix = 'Cyber Security: ';
                 if (spec === 'CC') titlePrefix = 'Cloud Computing: ';
                 const subjectSpan = item.querySelector('.subject');
-                modalTitle.innerHTML = subjectSpan ? titlePrefix + subjectSpan.outerHTML : 'Details';
+                modalTitle.innerHTML = subjectSpan ? titlePrefix + subjectSpan.textContent : 'Details';
 
                 const data = classData[currentItemId] || {};
                 notesArea.value = data.notes || '';
@@ -756,7 +650,7 @@
                 const subject = document.getElementById(currentItemId)?.querySelector('.subject')?.textContent || 'this class';
                 const currentNotes = notesArea.value;
 
-                if (currentNotes.trim().length < 50) { // Don't summarize very short notes
+                if (currentNotes.trim().length < 50) { 
                     alert("Not enough text to summarize. Write some more notes first!");
                     return;
                 }
