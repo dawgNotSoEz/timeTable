@@ -79,12 +79,26 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
+        .view-controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+
         .view-controls button {
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
             color: #fff;
             padding: 10px 20px;
-            margin: 0 5px;
+            margin: 0;
             border-radius: 10px;
             cursor: pointer;
             font-size: 0.9em;
@@ -303,9 +317,16 @@
             <h1>Backhodi Time Table</h1>
             <div id="clock"></div>
             <div class="view-controls">
-                <button data-view="today" class="active">Today</button>
-                <button data-view="tomorrow">Tomorrow</button>
-                <button data-view="full-week">Full Week</button>
+                <div class="filter-group">
+                    <button data-view="today" class="day-filter active">Today</button>
+                    <button data-view="tomorrow" class="day-filter">Tomorrow</button>
+                    <button data-view="full-week" class="day-filter">Full Week</button>
+                </div>
+                <div class="filter-group">
+                    <button data-spec-filter="all" class="spec-filter active">All Specs</button>
+                    <button data-spec-filter="cs" class="spec-filter">Cyber Security</button>
+                    <button data-spec-filter="cc" class="spec-filter">Cloud Computing</button>
+                </div>
             </div>
         </header>
 
@@ -458,7 +479,8 @@
             const taskList = document.getElementById('task-list');
             const notesArea = document.getElementById('notes-area');
             const clockElement = document.getElementById('clock');
-            const viewButtons = document.querySelectorAll('.view-controls button');
+            const dayFilterButtons = document.querySelectorAll('.day-filter');
+            const specFilterButtons = document.querySelectorAll('.spec-filter');
             const container = document.querySelector('.container');
             const reminderDateInput = document.getElementById('reminder-date');
             const reminderToggle = document.getElementById('reminder-toggle');
@@ -669,7 +691,6 @@
                     timetableGrid.classList.add('show-day-1');
                 }
                 
-                // Highlight header
                 document.querySelectorAll('.grid-header').forEach(h => h.classList.remove('highlight-day'));
                 const headerToHighlight = document.querySelector(`.grid-header[data-day="${dayIndex === 0 ? 1 : dayIndex}"]`);
                 if(headerToHighlight) headerToHighlight.classList.add('highlight-day');
@@ -719,8 +740,8 @@
             loadAllData();
             setInterval(checkReminders, 60000);
             
-            const todayIndex = new Date().getDay(); // Sunday: 0, Monday: 1...
-            setDayView(todayIndex); // Set initial view to today
+            const todayIndex = new Date().getDay();
+            setDayView(todayIndex);
 
             classItems.forEach(item => {
                 if (item.querySelector('.subject')) {
@@ -730,9 +751,9 @@
                 }
             });
 
-            viewButtons.forEach(button => {
+            dayFilterButtons.forEach(button => {
                 button.addEventListener('click', (e) => {
-                    viewButtons.forEach(btn => btn.classList.remove('active'));
+                    dayFilterButtons.forEach(btn => btn.classList.remove('active'));
                     e.currentTarget.classList.add('active');
                     
                     const view = e.currentTarget.dataset.view;
@@ -742,8 +763,22 @@
                         setDayView(new Date().getDay());
                     } else if (view === 'tomorrow') {
                         let tomorrowIndex = new Date().getDay() + 1;
-                        if (tomorrowIndex > 6) tomorrowIndex = 1; // If tomorrow is Sunday, show Monday
+                        if (tomorrowIndex > 6) tomorrowIndex = 0; // Wrap to Sunday
                         setDayView(tomorrowIndex);
+                    }
+                });
+            });
+
+            specFilterButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    specFilterButtons.forEach(btn => btn.classList.remove('active'));
+                    e.currentTarget.classList.add('active');
+                    const spec = e.currentTarget.dataset.specFilter;
+                    container.classList.remove('view-cs', 'view-cc');
+                    if (spec === 'cs') {
+                        container.classList.add('view-cs');
+                    } else if (spec === 'cc') {
+                        container.classList.add('view-cc');
                     }
                 });
             });
