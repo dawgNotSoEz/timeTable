@@ -134,6 +134,11 @@
             background: rgba(0, 0, 0, 0.25);
             font-size: 1.2em;
         }
+        
+        .grid-header.highlight-day {
+            box-shadow: 0 0 20px var(--accent-color);
+            border-color: var(--accent-color);
+        }
 
         .time-slot {
             font-size: 0.8em;
@@ -238,6 +243,26 @@
         .container.view-cc .grid-cell .split-class[data-spec="CC"]:first-child {
              border-top: none;
         }
+        
+        /* --- Day Specific View Logic --- */
+        .timetable-grid.day-view .grid-header[data-day],
+        .timetable-grid.day-view .grid-cell[data-day] {
+            display: none;
+        }
+        
+        .timetable-grid.show-day-1 .grid-header[data-day="1"], .timetable-grid.show-day-1 .grid-cell[data-day="1"],
+        .timetable-grid.show-day-2 .grid-header[data-day="2"], .timetable-grid.show-day-2 .grid-cell[data-day="2"],
+        .timetable-grid.show-day-3 .grid-header[data-day="3"], .timetable-grid.show-day-3 .grid-cell[data-day="3"],
+        .timetable-grid.show-day-4 .grid-header[data-day="4"], .timetable-grid.show-day-4 .grid-cell[data-day="4"],
+        .timetable-grid.show-day-5 .grid-header[data-day="5"], .timetable-grid.show-day-5 .grid-cell[data-day="5"],
+        .timetable-grid.show-day-6 .grid-header[data-day="6"], .timetable-grid.show-day-6 .grid-cell[data-day="6"] {
+            display: flex;
+        }
+        
+        .timetable-grid.day-view {
+            grid-template-columns: 80px 1fr;
+        }
+
 
         /* --- MODAL STYLES --- */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); backdrop-filter: blur(8px); }
@@ -262,9 +287,9 @@
         @media (max-width: 768px) {
             body { padding: 5px; }
             h1 { font-size: 1.8em; }
-            .timetable-grid { min-width: 800px; }
-            .timetable-grid > .grid-header:first-child,
-            .timetable-grid > .time-slot:not(.lunch-slot) { position: sticky; left: 0; z-index: 10; background: var(--primary-bg); }
+            .timetable-grid.full-week-view { min-width: 800px; }
+            .timetable-grid.full-week-view > .grid-header:first-child,
+            .timetable-grid.full-week-view > .time-slot:not(.lunch-slot) { position: sticky; left: 0; z-index: 10; background: var(--primary-bg); }
             .time-slot { writing-mode: horizontal-tb; }
         }
     </style>
@@ -276,101 +301,107 @@
             <h1>Backhodi Time Table</h1>
             <div id="clock"></div>
             <div class="view-controls">
-                <button class="active" data-view="all">Show All</button>
-                <button data-view="cs">Cyber Security Only</button>
-                <button data-view="cc">Cloud Computing Only</button>
+                <button data-view="today" class="active">Today</button>
+                <button data-view="tomorrow">Tomorrow</button>
+                <button data-view="full-week">Full Week</button>
             </div>
         </header>
 
         <div class="timetable-container">
             <div class="timetable-grid">
                 <!-- Header Row -->
-                <div class="grid-header"></div><div class="grid-header">Monday</div><div class="grid-header">Tuesday</div><div class="grid-header">Wednesday</div><div class="grid-header">Thursday</div><div class="grid-header">Friday</div><div class="grid-header">Saturday</div>
+                <div class="grid-header"></div>
+                <div class="grid-header" data-day="1">Monday</div>
+                <div class="grid-header" data-day="2">Tuesday</div>
+                <div class="grid-header" data-day="3">Wednesday</div>
+                <div class="grid-header" data-day="4">Thursday</div>
+                <div class="grid-header" data-day="5">Friday</div>
+                <div class="grid-header" data-day="6">Saturday</div>
                 
                 <!-- Time Slot 1: 9:00 - 10:00 -->
                 <div class="time-slot">9:00<span>|</span>10:00</div>
-                <div class="grid-cell row-span-2">
+                <div class="grid-cell row-span-2" data-day="1">
                     <div class="class-item split-class" id="mon-9-cs" data-spec="CS"><span class="spec-label cs">CS</span><span class="subject">Linux & Shell Programming Lab</span><div class="class-info"><span class="room">13</span><span class="teacher">Neha</span></div></div>
                     <div class="class-item split-class" id="mon-9-cc" data-spec="CC"><span class="spec-label cc">CC</span><span class="subject">Essentials of Cyber Security Lab</span><div class="class-info"><span class="room">12</span><span class="teacher">Satnam</span></div></div>
                 </div>
-                <div class="grid-cell row-span-2">
+                <div class="grid-cell row-span-2" data-day="2">
                     <div class="class-item split-class" id="tue-9-cs" data-spec="CS"><span class="spec-label cs">CS</span><span class="subject">SEC-III (MATLAB)</span><div class="class-info"><span class="room">414</span><span class="teacher">Sonu</span></div></div>
                     <div class="class-item split-class" id="tue-9-cc" data-spec="CC"><span class="spec-label cc">CC</span><span class="subject">Software Engineering Lab</span><div class="class-info"><span class="room">14</span><span class="teacher">Charvi</span></div></div>
                 </div>
-                <div class="grid-cell row-span-2">
+                <div class="grid-cell row-span-2" data-day="3">
                     <div class="class-item split-class" id="wed-9-cs" data-spec="CS"><span class="spec-label cs">CS</span><span class="subject">Computer Network Lab</span><div class="class-info"><span class="room">408</span><span class="teacher">Chhavi</span></div></div>
                     <div class="class-item split-class" id="wed-9-cc" data-spec="CC"><span class="spec-label cc">CC</span><span class="subject">Essentials of Cyber Security Lab</span><div class="class-info"><span class="room">12</span><span class="teacher">Satnam</span></div></div>
                 </div>
-                <div class="grid-cell row-span-2">
+                <div class="grid-cell row-span-2" data-day="4">
                     <div class="class-item split-class" id="thu-9-cs" data-spec="CS"><span class="spec-label cs">CS</span><span class="subject">Software Engineering Lab</span><div class="class-info"><span class="room">420</span><span class="teacher">Charvi</span></div></div>
                     <div class="class-item split-class" id="thu-9-cc" data-spec="CC"><span class="spec-label cc">CC</span><span class="subject">SEC-III (MATLAB)</span><div class="class-info"><span class="room">414</span><span class="teacher">Sonu</span></div></div>
                 </div>
-                <div class="grid-cell"><div class="class-item" id="fri-9-both" data-spec="BOTH"><span class="subject">Data Mining & Predictive Modelling</span><div class="class-info"><span class="room">422</span><span class="teacher">Kanika</span></div></div></div>
-                <div class="grid-cell"><div class="class-item" id="sat-9-both" data-spec="BOTH"><span class="subject">Blockchain Policy</span><div class="class-info"><span class="room">412</span><span class="teacher">Anand</span></div></div></div>
+                <div class="grid-cell" data-day="5"><div class="class-item" id="fri-9-both" data-spec="BOTH"><span class="subject">Data Mining & Predictive Modelling</span><div class="class-info"><span class="room">422</span><span class="teacher">Kanika</span></div></div></div>
+                <div class="grid-cell" data-day="6"><div class="class-item" id="sat-9-both" data-spec="BOTH"><span class="subject">Blockchain Policy</span><div class="class-info"><span class="room">412</span><span class="teacher">Anand</span></div></div></div>
 
                 <!-- Time Slot 2: 10:00 - 11:00 -->
                 <div class="time-slot">10:00<span>|</span>11:00</div>
-                <div class="grid-cell"><div class="class-item" id="fri-10-both" data-spec="BOTH"><span class="subject">Essentials of Cyber Security</span><div class="class-info"><span class="room">421</span><span class="teacher">Kavita</span></div></div></div>
-                <div class="grid-cell"><div class="class-item" id="sat-10-both" data-spec="BOTH"><span class="subject">Essentials of Cyber Security</span><div class="class-info"><span class="room">421</span><span class="teacher">Kavita</span></div></div></div>
+                <div class="grid-cell" data-day="5"><div class="class-item" id="fri-10-both" data-spec="BOTH"><span class="subject">Essentials of Cyber Security</span><div class="class-info"><span class="room">421</span><span class="teacher">Kavita</span></div></div></div>
+                <div class="grid-cell" data-day="6"><div class="class-item" id="sat-10-both" data-spec="BOTH"><span class="subject">Essentials of Cyber Security</span><div class="class-info"><span class="room">421</span><span class="teacher">Kavita</span></div></div></div>
 
                 <!-- Time Slot 3: 11:00 - 12:00 -->
                 <div class="time-slot">11:00<span>|</span>12:00</div>
-                <div class="grid-cell row-span-2">
+                <div class="grid-cell row-span-2" data-day="1">
                     <div class="class-item split-class" id="mon-11-cs" data-spec="CS"><span class="spec-label cs">CS</span><span class="subject">Computer Network Lab</span><div class="class-info"><span class="room">409</span><span class="teacher">Chhavi</span></div></div>
                     <div class="class-item split-class" id="mon-11-cc" data-spec="CC"><span class="spec-label cc">CC</span><span class="subject">Software Engineering Lab</span><div class="class-info"><span class="room">317</span><span class="teacher">Charvi</span></div></div>
                 </div>
-                <div class="grid-cell"><div class="class-item" id="tue-11-both" data-spec="BOTH"><span class="subject">Private cloud environment</span><div class="class-info"><span class="room">314</span><span class="teacher">Anand</span></div></div></div>
-                <div class="grid-cell row-span-2">
+                <div class="grid-cell" data-day="2"><div class="class-item" id="tue-11-both" data-spec="BOTH"><span class="subject">Private cloud environment</span><div class="class-info"><span class="room">314</span><span class="teacher">Anand</span></div></div></div>
+                <div class="grid-cell row-span-2" data-day="3">
                     <div class="class-item split-class" id="wed-11-cs" data-spec="CS"><span class="spec-label cs">CS</span><span class="subject">Essentials of Cyber Security Lab</span><div class="class-info"><span class="room">12</span><span class="teacher">Kavita</span></div></div>
                     <div class="class-item split-class" id="wed-11-cc" data-spec="CC"><span class="spec-label cc">CC</span><span class="subject">Computer Network Lab</span><div class="class-info"><span class="room">408</span><span class="teacher">Kanika</span></div></div>
                 </div>
-                <div class="grid-cell row-span-2">
+                <div class="grid-cell row-span-2" data-day="4">
                      <div class="class-item split-class" id="thu-11-cs" data-spec="CS"><span class="spec-label cs">CS</span><span class="subject">Essentials of Cyber Security Lab</span><div class="class-info"><span class="room">419</span><span class="teacher">Kavita</span></div></div>
                      <div class="class-item split-class" id="thu-11-cc" data-spec="CC"><span class="spec-label cc">CC</span><span class="subject">Computer Network Lab</span><div class="class-info"><span class="room">407</span><span class="teacher">Kanika</span></div></div>
                 </div>
-                <div class="grid-cell"><div class="class-item" id="fri-11-both" data-spec="BOTH"><span class="subject">Computer Network</span><div class="class-info"><span class="room">416</span><span class="teacher">Vinod</span></div></div></div>
-                <div class="grid-cell row-span-2">
+                <div class="grid-cell" data-day="5"><div class="class-item" id="fri-11-both" data-spec="BOTH"><span class="subject">Computer Network</span><div class="class-info"><span class="room">416</span><span class="teacher">Vinod</span></div></div></div>
+                <div class="grid-cell row-span-2" data-day="6">
                     <div class="class-item split-class" id="sat-11-cs" data-spec="CS"><span class="spec-label cs">CS</span><span class="subject">Linux and Shell Programming Lab</span><div class="class-info"><span class="room">409</span><span class="teacher">Neha</span></div></div>
                     <div class="class-item split-class" id="sat-11-cc" data-spec="CC"><span class="spec-label cc">CC</span><span class="subject">SEC-III (MATLAB)</span><div class="class-info"><span class="room">408</span><span class="teacher">Sonu</span></div></div>
                 </div>
 
                 <!-- Time Slot 4: 12:00 - 13:00 -->
                 <div class="time-slot">12:00<span>|</span>1:00</div>
-                <div class="grid-cell"><div class="class-item" id="tue-12-both" data-spec="BOTH"><span class="subject">Software Engineering</span><div class="class-info"><span class="room">321</span><span class="teacher">Charvi</span></div></div></div>
-                <div class="grid-cell"><div class="class-item" id="fri-12-both" data-spec="BOTH"><span class="subject">Software Engineering</span><div class="class-info"><span class="room">310</span><span class="teacher">Charvi</span></div></div></div>
+                <div class="grid-cell" data-day="2"><div class="class-item" id="tue-12-both" data-spec="BOTH"><span class="subject">Software Engineering</span><div class="class-info"><span class="room">321</span><span class="teacher">Charvi</span></div></div></div>
+                <div class="grid-cell" data-day="5"><div class="class-item" id="fri-12-both" data-spec="BOTH"><span class="subject">Software Engineering</span><div class="class-info"><span class="room">310</span><span class="teacher">Charvi</span></div></div></div>
                 
                 <!-- Lunch Break -->
                 <div class="time-slot lunch-slot">1:00 PM - 1:30 PM &nbsp; LUNCH</div>
 
                 <!-- Time Slot 5: 13:30 - 14:30 -->
                 <div class="time-slot">1:30<span>|</span>2:30</div>
-                <div class="grid-cell"><div class="class-item" id="mon-13-both" data-spec="BOTH"><span class="subject">Computer Network</span><div class="class-info"><span class="room">416</span><span class="teacher">Vinod</span></div></div></div>
-                <div class="grid-cell"><div class="class-item" id="tue-13-both" data-spec="BOTH"><span class="subject">Personality Development & Career Building</span><div class="class-info"><span class="room">403</span><span class="teacher">English</span></div></div></div>
-                <div class="grid-cell row-span-2">
+                <div class="grid-cell" data-day="1"><div class="class-item" id="mon-13-both" data-spec="BOTH"><span class="subject">Computer Network</span><div class="class-info"><span class="room">416</span><span class="teacher">Vinod</span></div></div></div>
+                <div class="grid-cell" data-day="2"><div class="class-item" id="tue-13-both" data-spec="BOTH"><span class="subject">Personality Development & Career Building</span><div class="class-info"><span class="room">403</span><span class="teacher">English</span></div></div></div>
+                <div class="grid-cell row-span-2" data-day="3">
                     <div class="class-item split-class" id="wed-13-cs" data-spec="CS"><span class="spec-label cs">CS</span><span class="subject">Software Engineering Lab</span><div class="class-info"><span class="room">415</span><span class="teacher">Charvi</span></div></div>
                     <div class="class-item split-class" id="wed-13-cc" data-spec="CC"><span class="spec-label cc">CC</span><span class="subject">Private cloud environment Lab</span><div class="class-info"><span class="room">407</span><span class="teacher">Anand</span></div></div>
                 </div>
-                <div class="grid-cell"><div class="class-item" id="thu-13-both" data-spec="BOTH"><span class="subject">Blockchain Policy</span><div class="class-info"><span class="room">416</span><span class="teacher">Anand</span></div></div></div>
-                <div class="grid-cell row-span-2">
+                <div class="grid-cell" data-day="4"><div class="class-item" id="thu-13-both" data-spec="BOTH"><span class="subject">Blockchain Policy</span><div class="class-info"><span class="room">416</span><span class="teacher">Anand</span></div></div></div>
+                <div class="grid-cell row-span-2" data-day="5">
                     <div class="class-item split-class" id="fri-13-cs" data-spec="CS"><span class="spec-label cs">CS</span><span class="subject">SEC-III (MATLAB)</span><div class="class-info"><span class="room">419</span><span class="teacher">Sonu</span></div></div>
                     <div class="class-item split-class" id="fri-13-cc" data-spec="CC"><span class="spec-label cc">CC</span><span class="subject">Private cloud environment Lab</span><div class="class-info"><span class="room">420</span><span class="teacher">Anand</span></div></div>
                 </div>
-                <div class="grid-cell"><div class="class-item" id="sat-13-both" data-spec="BOTH"><span class="subject">Linux and Shell Programming</span><div class="class-info"><span class="room">404</span><span class="teacher">Neha</span></div></div></div>
+                <div class="grid-cell" data-day="6"><div class="class-item" id="sat-13-both" data-spec="BOTH"><span class="subject">Linux and Shell Programming</span><div class="class-info"><span class="room">404</span><span class="teacher">Neha</span></div></div></div>
 
                 <!-- Time Slot 6: 14:30 - 15:30 -->
                 <div class="time-slot">2:30<span>|</span>3:30</div>
-                <div class="grid-cell"><div class="class-item" id="mon-14-both" data-spec="BOTH"><span class="subject">Mentor Mentee Session</span></div></div>
-                <div class="grid-cell row-span-2"><div class="class-item" id="tue-14-both" data-spec="BOTH"><span class="subject">Industrial Training-I</span></div></div>
-                <div class="grid-cell"><div class="class-item" id="thu-14-both" data-spec="BOTH"><span class="subject">Automata Theory and Computability</span><div class="class-info"><span class="room">319</span><span class="teacher">Saumaya</span></div></div></div>
-                <div class="grid-cell"><div class="class-item" id="sat-14-both" data-spec="BOTH"><span class="subject">Personality Development & Career Building</span><div class="class-info"><span class="room">416</span><span class="teacher">English</span></div></div></div>
+                <div class="grid-cell" data-day="1"><div class="class-item" id="mon-14-both" data-spec="BOTH"><span class="subject">Mentor Mentee Session</span></div></div>
+                <div class="grid-cell row-span-2" data-day="2"><div class="class-item" id="tue-14-both" data-spec="BOTH"><span class="subject">Industrial Training-I</span></div></div>
+                <div class="grid-cell" data-day="4"><div class="class-item" id="thu-14-both" data-spec="BOTH"><span class="subject">Automata Theory and Computability</span><div class="class-info"><span class="room">319</span><span class="teacher">Saumaya</span></div></div></div>
+                <div class="grid-cell" data-day="6"><div class="class-item" id="sat-14-both" data-spec="BOTH"><span class="subject">Automata Theory and Computability</span><div class="class-info"><span class="room">319</span><span class="teacher">Saumaya</span></div></div></div>
 
                 <!-- Time Slot 7: 15:30 - 16:30 -->
                 <div class="time-slot">3:30<span>|</span>4:30</div>
-                <div class="grid-cell"><div class="class-item" id="mon-15-both" data-spec="BOTH"><span class="subject">Data Mining and Predictive Modelling</span><div class="class-info"><span class="room"></span><span class="teacher">Sonu</span></div></div></div>
-                <div class="grid-cell"><div class="class-item" id="wed-15-both" data-spec="BOTH"><span class="subject">Linux and Shell Programming</span><div class="class-info"><span class="room">210</span><span class="teacher">Neha</span></div></div></div>
-                <div class="grid-cell"><div class="class-item" id="thu-15-both" data-spec="BOTH"><span class="subject">Private cloud environment</span><div class="class-info"><span class="room">403</span><span class="teacher">Anand</span></div></div></div>
-                <div class="grid-cell"><div class="class-item" id="fri-15-both" data-spec="BOTH"><span class="subject">Automata Theory and Computability</span><div class="class-info"><span class="room">321</span><span class="teacher">Saumaya</span></div></div></div>
-                <div class="grid-cell"><div class="class-item" id="sat-15-both" data-spec="BOTH"><span class="subject">Automata Theory and Computability</span><div class="class-info"><span class="room">321</span><span class="teacher">Saumaya</span></div></div></div>
+                <div class="grid-cell" data-day="1"><div class="class-item" id="mon-15-both" data-spec="BOTH"><span class="subject">Data Mining and Predictive Modelling</span><div class="class-info"><span class="room"></span><span class="teacher">Sonu</span></div></div></div>
+                <div class="grid-cell" data-day="3"><div class="class-item" id="wed-15-both" data-spec="BOTH"><span class="subject">Linux and Shell Programming</span><div class="class-info"><span class="room">210</span><span class="teacher">Neha</span></div></div></div>
+                <div class="grid-cell" data-day="4"><div class="class-item" id="thu-15-both" data-spec="BOTH"><span class="subject">Private cloud environment</span><div class="class-info"><span class="room">403</span><span class="teacher">Anand</span></div></div></div>
+                <div class="grid-cell" data-day="5"><div class="class-item" id="fri-15-both" data-spec="BOTH"><span class="subject">Automata Theory and Computability</span><div class="class-info"><span class="room">321</span><span class="teacher">Saumaya</span></div></div></div>
+                <div class="grid-cell" data-day="6"><div class="class-item" id="sat-15-both" data-spec="BOTH"><span class="subject">Personality Development & Career Building</span><div class="class-info"><span class="room">416</span><span class="teacher">English</span></div></div></div>
             </div>
         </div>
     </div>
@@ -432,6 +463,7 @@
             const generatePlanBtn = document.getElementById('generate-plan-btn');
             const summarizeNotesBtn = document.getElementById('summarize-notes-btn');
             const geminiLoader = document.getElementById('gemini-loader');
+            const timetableGrid = document.querySelector('.timetable-grid');
 
             // --- State Management ---
             let currentItemId = null;
@@ -626,6 +658,25 @@
                     }
                 });
             }
+            
+            function setDayView(dayIndex) { // 1 for Mon, 2 for Tue, etc. 0 for Sunday
+                timetableGrid.className = 'timetable-grid day-view'; // Base classes
+                if (dayIndex > 0 && dayIndex < 7) {
+                    timetableGrid.classList.add(`show-day-${dayIndex}`);
+                } else { // On Sunday, show Monday
+                    timetableGrid.classList.add('show-day-1');
+                }
+                
+                // Highlight header
+                document.querySelectorAll('.grid-header').forEach(h => h.classList.remove('highlight-day'));
+                const headerToHighlight = document.querySelector(`.grid-header[data-day="${dayIndex === 0 ? 1 : dayIndex}"]`);
+                if(headerToHighlight) headerToHighlight.classList.add('highlight-day');
+            }
+            
+            function setFullWeekView() {
+                timetableGrid.className = 'timetable-grid full-week-view';
+                document.querySelectorAll('.grid-header').forEach(h => h.classList.remove('highlight-day'));
+            }
 
             // --- Gemini Feature Functions ---
             async function generateStudyPlan() {
@@ -665,6 +716,9 @@
             updateClock();
             loadAllData();
             setInterval(checkReminders, 60000);
+            
+            const todayIndex = new Date().getDay(); // Sunday: 0, Monday: 1...
+            setDayView(todayIndex); // Set initial view to today
 
             classItems.forEach(item => {
                 if (item.querySelector('.subject')) {
@@ -675,13 +729,20 @@
             });
 
             viewButtons.forEach(button => {
-                button.addEventListener('click', () => {
+                button.addEventListener('click', (e) => {
                     viewButtons.forEach(btn => btn.classList.remove('active'));
-                    button.classList.add('active');
-                    container.className = 'container'; 
-                    const view = button.dataset.view;
-                    if (view === 'cs') container.classList.add('view-cs');
-                    else if (view === 'cc') container.classList.add('view-cc');
+                    e.currentTarget.classList.add('active');
+                    
+                    const view = e.currentTarget.dataset.view;
+                    if(view === 'full-week') {
+                        setFullWeekView();
+                    } else if (view === 'today') {
+                        setDayView(new Date().getDay());
+                    } else if (view === 'tomorrow') {
+                        let tomorrowIndex = new Date().getDay() + 1;
+                        if (tomorrowIndex > 6) tomorrowIndex = 1; // If tomorrow is Sunday, show Monday
+                        setDayView(tomorrowIndex);
+                    }
                 });
             });
 
